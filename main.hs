@@ -8,11 +8,6 @@ import qualified Data.Set as Set
 black = rgb 0 0 0
 white = rgb 255 255 255
 
-tap :: Monad m => (a -> m b) -> a -> m a
-tap fn c =
-  do fn c
-     return c
-
 applyEach :: [a -> b] -> [a] -> [b]
 applyEach fs xs = map (uncurry ($)) (zip fs xs)
 
@@ -56,19 +51,15 @@ toBin 0 = [0]
 toBin n | n `mod` 2 == 1 = toBin (n `div` 2) ++ [1]
         | n `mod` 2 == 0 = toBin (n `div` 2) ++ [0]
 
-lpad m xs = reverse $ take m $ reverse $ (take m $ repeat 0) ++ (take m xs)
+lpad m xs = reverse . (take m) . reverse $ (take m $ repeat 0) ++ (take m xs)
 toBin' n = lpad 8 $ toBin n
 
-opts = [[1, 1, 1],
-        [1, 1, 0],
-        [1, 0, 1],
-        [1, 0, 0],
-        [0, 1, 1],
-        [0, 1, 0],
-        [0, 0, 1],
-        [0, 0, 0]]
+opts = reverse $ map ((reverse . (take 3) . (++ (repeat 0)) . reverse) . toBin) [0..7]
 rule n xs = Set.member xs validConfigs
   where validConfigs = Set.fromList (map fst (filter ((==1) . snd) (zip opts (toBin' n))))
+
+tap :: Monad m => (a -> m b) -> a -> m a
+tap fn c = do fn c; return c
 
 main :: IO ()
 main =
