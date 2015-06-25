@@ -63,7 +63,7 @@ tap fn c = do fn c; return c
 
 main :: IO ()
 main =
-  let w = 200; h = 200; s = 5
+  let w = 200; h = 350; s = 5
       n = h `quot` s in
   do newImage (w, h)
      >>= tap (fillImage white)
